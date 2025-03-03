@@ -79,14 +79,14 @@ Resources:
             Statement:
               - Effect: 'Allow'
                 Action: 'lambda:*'
-                Resource: !ImportValue "${AWS::StackName}-LambdaFunction"
+                Resource: !ImportValue LambdaFunction
 
   lambdaApiGatewayInvoke:
     Type: "AWS::Lambda::Permission"
     DependsOn: RestApiIMMUNE
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !ImportValue "${AWS::StackName}-LambdaFunction"
+      FunctionName: !ImportValue LambdaFunction
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApiIMMUNE}/*/POST/"
 
@@ -94,4 +94,4 @@ Outputs:
   RootResourceId:
     Value: !Ref RestApiIMMUNE
     Export:
-      Name: !Sub "${AWS::StackName}-RootResourceId"
+      Name: RootResourceId
