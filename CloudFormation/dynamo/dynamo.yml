@@ -24,8 +24,8 @@ Outputs:
   DynamoIMMUNE:
       Value: !Ref DynamoIMMUNE
       Export:
-        Name: !Sub "${AWS::StackName}-DynamoIMMUNE"
+        Name: DynamoIMMUNE
   DynamoIMMUNEArn:
       Value: !GetAtt DynamoIMMUNE.Arn
       Export:
-        Name: !Sub "${AWS::StackName}-DynamoIMMUNEArn"
+        Name: DynamoIMMUNEArn
