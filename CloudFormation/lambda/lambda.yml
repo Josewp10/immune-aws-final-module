@@ -24,7 +24,8 @@ Resources:
         Role: !GetAtt LambdaRole.Arn
         Environment:
             Variables:
-                DYNAMO_IMMUNE: !ImportValue !Sub "${AWS::StackName}-DynamoIMMUNE"
+                DYNAMO_IMMUNE: !ImportValue DynamoIMMUNE
+
 
     LambdaPolicyEC2:
         Type: AWS::IAM::ManagedPolicy
@@ -144,16 +145,16 @@ Outputs:
   LambdaPolicyDynamo:
     Value: !Ref LambdaPolicyDynamo
     Export:
-        Name: !Sub "${AWS::StackName}-LambdaPolicyDynamo"
+        Name: LambdaPolicyDynamo
   LambdaPolicyEC2:
     Value: !Ref LambdaPolicyEC2
     Export:
-        Name: !Sub "${AWS::StackName}-LambdaPolicyEC2"
+        Name: LambdaPolicyEC2
   LambdaPolicyCW:
     Value: !Ref LambdaPolicyCW
     Export:
-        Name: !Sub "${AWS::StackName}-LambdaPolicyCW"
+        Name: LambdaPolicyCW
   LambdaFunction:
     Value: !GetAtt LambdaFunction.Arn
     Export:
-        Name: !Sub "${AWS::StackName}-LambdaFunction"
+        Name: LambdaFunction
