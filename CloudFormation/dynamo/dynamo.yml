@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+    DynamoName:
+        Type: String
+    DynamoKey:
+        Type: String
+      
+Resources:
+  DynamoIMMUNE:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: !Ref DynamoKey
+        AttributeType: S
+      KeySchema:
+      - AttributeName: !Ref DynamoKey
+        KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+
+Outputs:
+  DynamoIMMUNE:
+      Value: !Ref DynamoIMMUNE
+      Export:
+        Name: !Sub "${AWS::StackName}-DynamoIMMUNE"
+  DynamoIMMUNEArn:
+      Value: !GetAtt DynamoIMMUNE.Arn
+      Export:
+        Name: !Sub "${AWS::StackName}-DynamoIMMUNEArn"
