@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+    AWS::CloudFormation::Interface:
+        ParameterGroups:
+            - 
+                Label:
+                    default: 'Base de Datos IMMUNE-DynamoDB'
+                Parameters:
+                    - DynamoName
+                    - DynamoKey
+            - 
+                Label:
+                    default: 'Función Lambda IMMUNE'
+                Parameters:
+                    - LambdaName
+                    - LambdaRuntime
+                    - LambdaBucket
+                    - ZipName
+        ParameterLabels:
+            DynamoName:
+                default: 'Ingrese el nombre de la tabla'
+            DynamoKey:
+                default: 'Ingrese el nombre de la Llave'
+            LambdaName:
+                default: 'Ingrese el nombre de la función lambda'
+            LambdaRuntime:
+                default: 'Seleccione el Runtime de la función'
+            LambdaBucket:
+                default: 'Ingrese el nombre del bucket donde está el código de la lambda'
+            ZipName:
+                default: 'Ingrese el nombre del .zip de la lambda'
+
+Parameters:
+    DynamoName:
+        Description: Nombre
+        Type: String
+    DynamoKey:
+        Description: Llave
+        Type: String
+    LambdaName:
+        Description: Nombre de la Lambda
+        Type: String
+    LambdaRuntime:
+       Description: Runtime de la función Lambda
+       Type: String
+       Default: python3.9
+       AllowedValues:
+            - python3.9
+            - python2.7
+            - ruby2.5
+            - nodejs8.10
+            - java8
+            - dotnetcore2.1
+    LambdaBucket:
+        Description: Nombre del Bucket donde se encuentra el código de la Lambda
+        Type: String
+    ZipName:
+        Description: Nombre del archivo .zip que contiene el código de la Lambda
+        Type: String
+    bucketName:
+        Type: String
+        Description: Nombre del bucket que será usado como sitio web
+    ownershipControls:
+        Type: String
+        Default: BucketOwnerPreferred
+        AllowedValues:
+            - BucketOwnerPreferred
+            - ObjectWriter
+            - BucketOwnerEnforced
+    versioning:
+        Type: String
+        Default: Enabled
+        AllowedValues:
+            - Enabled
+            - Suspended        
+
+Resources:
+    dynamo:
+        Type: "AWS::CloudFormation::Stack"
+        Properties:
+            TemplateURL: https://jdmo-immune-cloudformation-templates.s3.us-east-1.amazonaws.com/CloudFormation/dynamo/dynamo.yml
+            Parameters:
+                DynamoName: !Ref DynamoName
+                DynamoKey: !Ref DynamoKey
+
+    api:
+        Type: "AWS::CloudFormation::Stack"
+        DependsOn: lambda
+        Properties:
+            TemplateURL: https://jdmo-immune-cloudformation-templates.s3.us-east-1.amazonaws.com/CloudFormation/api-gw/api.yml
+            Parameters:
+                LambdaFunction: !GetAtt lambda.Outputs.LambdaFunction
+
+    lambda:
+        Type: "AWS::CloudFormation::Stack"
+        DependsOn: dynamo
+        Properties:
+            TemplateURL: https://jdmo-immune-cloudformation-templates.s3.us-east-1.amazonaws.com/CloudFormation/lambda/lambda.yml
+            Parameters:
+                LambdaName: !Ref LambdaName
+                LambdaRuntime: !Ref LambdaRuntime
+                LambdaBucket: !Ref LambdaBucket  
+                ZipName: !Ref ZipName
+
+    s3Website:
+        Type: "AWS::CloudFormation::Stack"
+        DependsOn: lambda
+        Properties:
+            TemplateURL: https://jdmo-immune-cloudformation-templates.s3.us-east-1.amazonaws.com/CloudFormation/S3/s3.yml
+            Parameters:
+                bucketName: !Ref bucketName
+                ownershipControls: !Ref ownershipControls
+                versioning: !Ref versioning  
+                
