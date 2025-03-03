@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+    bucketName:
+        Type: String
+    ownershipControls:
+        Type: String
+        Default: BucketOwnerPreferred
+        AllowedValues:
+            - BucketOwnerPreferred
+            - ObjectWriter
+            - BucketOwnerEnforced
+    versioning:
+        Type: String
+        Default: Enabled
+        AllowedValues:
+            - Enabled
+            - Suspended
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption: 
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'AES256'
+      BucketName: !Ref bucketName
+      OwnershipControls: 
+          Rules:
+            - ObjectOwnership: !Ref ownershipControls
+      VersioningConfiguration: 
+        Status: !Ref versioning
+      WebsiteConfiguration:
+        IndexDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicPolicy: false
+
+  S3Policy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref bucketName
+      PolicyDocument: 
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: 
+              - "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${bucketName}/*"
+
+
+Outputs:
+  S3DomainName:
+    Value: !GetAtt S3Bucket.DomainName
+    Export:
+      Name: S3BucketDomainName
+  BucketName:
+    Value: !Ref S3Bucket
+    Export: 
+      Name: S3BucketName
+ 
