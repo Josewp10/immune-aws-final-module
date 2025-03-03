@@ -38,9 +38,9 @@ Se han seleccionado estos servicios por las siguientes razones:
 - **API Gateway**: Facilita la exposición de la función Lambda como una API REST.
 
 ## Pasos de Despliegue
-1. Subir las plantillas de CloudFormation al bucket S3 `jdmo-immune-cloudformation-templates`.
-2. Desplegar la plantilla principal (`master.yml`) a través de AWS CloudFormation.
-3. Subir el código de la función Lambda al bucket S3 de demo.
+1. Subir las plantillas de CloudFormation al bucket S3 `jdmo-immune-cloudformation-templates`. Este se usa como punto central para las plantillas, lo que facilita su llamado desde CloudFormation como nested stacks.
+2. Subir el código de la función Lambda al bucket S3 de demo.
+3. Desplegar la plantilla principal (`master.yml`) a través de AWS CloudFormation.
 4. Acceder a la página web en S3 y probar la API.
 
 ## Buenas Prácticas Implementadas
